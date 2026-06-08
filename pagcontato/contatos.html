@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato</title>
+    <link rel="stylesheet" href="contatostyle.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sumana:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alata&family=Sumana&display=swap" rel="stylesheet">
+    <link rel="icon" href="img/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="pagina-contato">
+    <section class="PrimeiroFundo">
+        <header class="headerclass">
+            <div class="titulo">
+                <a href="../index.html">
+                    <img src="../img/LOGO-09.png" alt="Logo Voluncheer">
+                </a>
+            </div>
+
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Abrir menu">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <div class="menu-content" id="menuContent">
+                <nav class="opcoes">
+                    <ul>
+                        <li><a href="../index.html">HOME</a></li>
+                        <li><a href="../pagsobre/sobre.html">SOBRE</a></li>
+                        <li><a href="../pagongs/ongs.html">ONG'S</a></li>
+                        <li><a href="../pagcontato/contatos.html">CONTATO</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="perfil">
+                    <a href="../login/login.html">
+                        <button><i class="bi bi-person"></i></button>
+                    </a>
+                </div>
+            </div>
+        </header>
+    </section>
+    <main>
+        <div class="texto-contato">
+            <h2>Fale conosco!</h2>
+            <p>Sua opinião é muito importante para nós! Seja para tirar uma dúvida, fazer um elogio, enviar uma sugestão ou resolver qualquer questão, estamos à sua disposição.</p>
+            <form id="formulario">
+                <label>Nome:</label><br>
+                <input type="nome" id="nome" placeholder="Seu Nome" minlength="3" required><br><br>
+
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" placeholder="seuemail@dominio.com" required><br><br>
+
+                <label for="telefone">Telefone:</label><br>
+                <input type="tel" id="telefone" placeholder="(XX) XXXXX-XXXX" maxlength="15" required><br><br>
+
+                <label for="mensagem">Sua mensagem:</label><br>
+                <textarea id="mensagem" name="mensagem" placeholder="Digite sua mensagem aqui" rows="6" required></textarea><br><br>
+                
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </main>
+        <footer>
+        <section class="footer-container">
+            <div class="logo-voluncheer"><a href="../index.html"><img src="../img/LOGO-02.png"></a></div>
+            <div class="social-logos">
+                <a href="https://facebook.com" target="_blank"><i class="bi bi-facebook"></i></a>
+                <a href="https://youtube.com" target="_blank"><i class="bi bi-youtube"></i></a>
+                <a href="https://instagram.com" target="_blank"><i class="bi bi-instagram"></i></a>
+            </div>
+            <div class="footer-column">
+                <h4>Menu</h4>
+                <ul class="footer-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../pagsobre/sobre.html">Sobre</a></li>
+                    <li><a href="../pagongs/ongs.html">ONG's</a></li>
+                    <li><a href="../pagcontato/contatos.html">Contato</a></li>
+                </ul>
+            </div>
+        </section>
+        <div class="footer-bottom"><p>&copy; 2025 Voluncheer. Todos os direitos reservados.</p></div>
+    </footer>
+    <script src="../pagcontato/contatosjs.js"></script>
+</body>
+</html>
