@@ -160,73 +160,88 @@
       alert("Erro ao consultar CEP");
     }
   });
+async function cadastrar() {
+  const nome = document.getElementById("cad-nome").value.trim();
+  const email = document.getElementById("cad-email").value.trim();
+  const senha = document.getElementById("cad-senha").value.trim();
+  const tipo = document.getElementById("cad-tipo").value;
 
-  async function cadastrar() {
-    const nome = document.getElementById("cad-nome").value.trim();
-    const email = document.getElementById("cad-email").value.trim();
-    const senha = document.getElementById("cad-senha").value.trim();
-    const tipo = document.getElementById("cad-tipo").value;
+  let dadosExtras = {};
 
-    let dadosExtras = {};
-    if (tipo === "ong") {
-      dadosExtras = {
-        cnpj: document.getElementById("cnpj").value,
-        telefone: document.getElementById("telefone").value,
-        cep: document.getElementById("cep").value,
-        area: document.getElementById("ong-area").value,
-        site: document.getElementById("ong-site").value,
-        descricao: document.getElementById("ong-desc").value
-      };
-    }
-
-    if (!nome || !email || !senha) {
-      alert("Preencha nome, email e senha!");
-      return;
-    }
-
-    const novoUsuario = { nome, email, senha, tipo, ...dadosExtras };
-
-    try {
-      const response = await fetch('https://projeto-voluncheer-production.up.railway.app/cadastrar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(novoUsuario)
-      });
-
-      const dados = await response.json();
-      alert(dados.message);
-      if (response.ok) mostrarLogin();
-
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao conectar com o servidor.");
-    }
+  if (tipo === "ong") {
+    dadosExtras = {
+      cnpj: document.getElementById("cnpj").value,
+      telefone: document.getElementById("telefone").value,
+      cep: document.getElementById("cep").value,
+      area: document.getElementById("ong-area").value,
+      site: document.getElementById("ong-site").value,
+      descricao: document.getElementById("ong-desc").value
+    };
   }
 
-  async function login() {
-    const email = document.getElementById("login-email").value.trim();
-    const senha = document.getElementById("login-senha").value.trim();
-    const tipo = document.getElementById("login-tipo").value;
+  if (!nome || !email || !senha) {
+    alert("Preencha nome, email e senha!");
+    return;
+  }
 
-    try {
-      const response = await fetch('https://projeto-voluncheer-production.up.railway.app/login', {
+  const novoUsuario = { nome, email, senha, tipo, ...dadosExtras };
+
+  try {
+    const rotaCadastro =
+      tipo === "ong"
+        ? "https://projeto-voluncheer-production.up.railway.app/auth/cadastro/ong"
+        : "https://projeto-voluncheer-production.up.railway.app/auth/cadastro/voluntario";
+
+    const response = await fetch(rotaCadastro, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(novoUsuario)
+    });
+
+    const dados = await response.json();
+
+    alert(dados.message);
+
+    if (response.ok) {
+      mostrarLogin();
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao conectar com o servidor.");
+  }
+}
+
+async function login() {
+  const email = document.getElementById("login-email").value.trim();
+  const senha = document.getElementById("login-senha").value.trim();
+  const tipo = document.getElementById("login-tipo").value;
+
+  try {
+    const response = await fetch(
+      'https://projeto-voluncheer-production.up.railway.app/auth/login',
+      {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha, tipo })
-      });
-
-      const resultado = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("logado", JSON.stringify(resultado.user));
-        abrirPainel(resultado.user);
-      } else {
-        alert(resultado.message);
       }
-    } catch (error) {
-      alert("Erro ao validar login.");
+    );
+
+    const resultado = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem("logado", JSON.stringify(resultado.user));
+      abrirPainel(resultado.user);
+    } else {
+      alert(resultado.message || resultado.erro);
     }
+
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao validar login.");
   }
+}
+
 
 </script>
 
