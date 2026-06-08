@@ -108,99 +108,116 @@
 
 <script>
 
-  function mostrarCadastro() {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("cadastro-section").style.display = "block";
+function mostrarCadastro() {
+  document.getElementById("login-section").style.display = "none";
+  document.getElementById("cadastro-section").style.display = "block";
+}
+
+function mostrarLogin() {
+  document.getElementById("cadastro-section").style.display = "none";
+  document.getElementById("login-section").style.display = "block";
+}
+
+function abrirPainel(user) {
+  document.getElementById("login-section").style.display = "none";
+  document.getElementById("cadastro-section").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+
+  document.getElementById("dash-titulo").innerText =
+    `Olá, ${user.nome}! Você está logado como ${user.tipo}.`;
+}
+
+const selectCadTipo = document.getElementById("cad-tipo");
+const extraOng = document.getElementById("extra-ong");
+
+selectCadTipo.addEventListener("change", function () {
+  extraOng.style.display =
+    selectCadTipo.value === "ong" ? "block" : "none";
+});
+
+const cepInput = document.getElementById("cep");
+
+cepInput.addEventListener("blur", async function () {
+  const cep = cepInput.value.replace(/\D/g, "");
+
+  if (cep.length !== 8) return;
+
+  try {
+    const response = await fetch(
+      `https://viacep.com.br/ws/${cep}/json/`
+    );
+
+    const data = await response.json();
+
+    if (data.erro) return;
+
+    document.getElementById("rua").value = data.logradouro;
+    document.getElementById("bairro").value = data.bairro;
+    document.getElementById("cidade").value = data.localidade;
+    document.getElementById("estado").value = data.uf;
+
+  } catch (error) {
+    console.error(error);
   }
+});
 
-  function mostrarLogin() {
-    document.getElementById("cadastro-section").style.display = "none";
-    document.getElementById("login-section").style.display = "block";
-  }
-
-  function abrirPainel(user) {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("cadastro-section").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-    document.getElementById("dash-titulo").innerText = `Olá, ${user.nome}! Você está logado como ${user.tipo}.`;
-  }
-
-  const selectCadTipo = document.getElementById("cad-tipo");
-  const extraOng = document.getElementById("extra-ong");
-
-  selectCadTipo.addEventListener("change", function() {
-    extraOng.style.display = selectCadTipo.value === "ong" ? "block" : "none";
-  });
-
-  const cepInput = document.getElementById("cep");
-
-  cepInput.addEventListener("blur", async function () {
-    const cep = cepInput.value.replace(/\D/g, '');
-
-    if(cep.length !== 8) {
-      alert("CEP inválido");
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      const data = await response.json();
-
-      if(data.erro){
-        alert("CEP não encontrado!");
-        return;
-      }
-
-      document.getElementById("rua").value = data.logradouro;
-      document.getElementById("bairro").value = data.bairro;
-      document.getElementById("cidade").value = data.localidade;
-      document.getElementById("estado").value = data.uf;
-
-    } catch {
-      alert("Erro ao consultar CEP");
-    }
-  });
 async function cadastrar() {
+
   const nome = document.getElementById("cad-nome").value.trim();
   const email = document.getElementById("cad-email").value.trim();
   const senha = document.getElementById("cad-senha").value.trim();
   const tipo = document.getElementById("cad-tipo").value;
 
-  let dadosExtras = {};
-
-  if (tipo === "ong") {
-    dadosExtras = {
-      cnpj: document.getElementById("cnpj").value,
-      telefone: document.getElementById("telefone").value,
-      cep: document.getElementById("cep").value,
-      area: document.getElementById("ong-area").value,
-      site: document.getElementById("ong-site").value,
-      descricao: document.getElementById("ong-desc").value
-    };
-  }
-
   if (!nome || !email || !senha) {
-    alert("Preencha nome, email e senha!");
+    alert("Preencha nome, email e senha.");
     return;
   }
 
-  const novoUsuario = { nome, email, senha, tipo, ...dadosExtras };
+  let body;
+  let rota;
+
+  if (tipo === "voluntario") {
+
+    rota =
+      "https://projeto-voluncheer-production.up.railway.app/auth/cadastro/voluntario";
+
+    body = {
+      nm_voluntario: nome,
+      ds_email: email,
+      ds_senha: senha
+    };
+
+  } else {
+
+    rota =
+      "https://projeto-voluncheer-production.up.railway.app/auth/cadastro/ong";
+
+    body = {
+      ds_ong: nome,
+      ds_email: email,
+      ds_senha: senha,
+      ds_cnpj: document.getElementById("cnpj").value,
+      tel_ong: document.getElementById("telefone").value,
+      site_ong: document.getElementById("ong-site").value,
+      comp_ong: document.getElementById("ong-desc").value
+    };
+  }
 
   try {
-    const rotaCadastro =
-      tipo === "ong"
-        ? "https://projeto-voluncheer-production.up.railway.app/auth/cadastro/ong"
-        : "https://projeto-voluncheer-production.up.railway.app/auth/cadastro/voluntario";
 
-    const response = await fetch(rotaCadastro, {
+    const response = await fetch(rota, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novoUsuario)
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
     });
 
     const dados = await response.json();
 
-    alert(dados.message);
+    console.log("CADASTRO:", dados);
+
+    alert(dados.mensagem || dados.erro);
 
     if (response.ok) {
       mostrarLogin();
@@ -213,35 +230,60 @@ async function cadastrar() {
 }
 
 async function login() {
+
   const email = document.getElementById("login-email").value.trim();
   const senha = document.getElementById("login-senha").value.trim();
-  const tipo = document.getElementById("login-tipo").value;
+
+  if (!email || !senha) {
+    alert("Preencha email e senha.");
+    return;
+  }
 
   try {
+
     const response = await fetch(
-      'https://projeto-voluncheer-production.up.railway.app/auth/login',
+      "https://projeto-voluncheer-production.up.railway.app/auth/login",
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha, tipo })
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ds_email: email,
+          ds_senha: senha
+        })
       }
     );
 
     const resultado = await response.json();
 
+    console.log("LOGIN:", resultado);
+
     if (response.ok) {
-      localStorage.setItem("logado", JSON.stringify(resultado.user));
-      abrirPainel(resultado.user);
+
+      localStorage.setItem(
+        "token",
+        resultado.token
+      );
+
+      abrirPainel({
+        nome: email,
+        tipo: resultado.tp_usuario
+      });
+
     } else {
-      alert(resultado.message || resultado.erro);
+
+      alert(resultado.erro || "Erro ao fazer login.");
+
     }
 
   } catch (error) {
+
     console.error(error);
     alert("Erro ao validar login.");
+
   }
 }
-
 
 </script>
 
